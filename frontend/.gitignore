@@ -1,0 +1,13 @@
+# Created by https://www.toptal.com/developers/gitignore/api/vue
+# Edit at https://www.toptal.com/developers/gitignore?templates=vue
+
+### Vue ###
+# gitignore template for Vue.js projects
+#
+# Recommended template: Node.gitignore
+
+docs/_book
+
+test/
+
+# End of https://www.toptal.com/developers/gitignore/api/vue
