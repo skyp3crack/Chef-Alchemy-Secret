@@ -1,13 +1,36 @@
-# Created by https://www.toptal.com/developers/gitignore/api/vue
-# Edit at https://www.toptal.com/developers/gitignore?templates=vue
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-### Vue ###
-# gitignore template for Vue.js projects
-#
-# Recommended template: Node.gitignore
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
 
-docs/_book
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-test/
+*.tsbuildinfo
 
-# End of https://www.toptal.com/developers/gitignore/api/vue
+.eslintcache
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Vitest
+__screenshots__/

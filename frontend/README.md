@@ -1,35 +1,54 @@
-# API Endpoints (Planned)
+# vue-project
 
-- POST /api/auth/register - Register a new user
-- POST /api/auth/login - Authenticate user and get token
-- GET /api/recipes - Get all recipes
-- POST /api/recipes - Create a new recipe (Auth required)
-- GET /api/recipes/{id} - Get a single recipe
-- PUT /api/recipes/{id} - Update a recipe (Auth required, owner only)
-- DELETE /api/recipes/{id} - Delete a recipe (Auth required, owner only)
-(More to be added for users, categories, comments, etc.)
+This template should help get you started developing with Vue 3 in Vite.
 
+## Recommended IDE Setup
 
-# Features
+[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Basic Requirements (Must-Have)
+## Recommended Browser Setup
 
-- User Login & Register
-- CRUD operations for Recipes
-- RESTful API
-- Database integration
-- Frontend-Backend separation
+- Chromium-based browsers (Chrome, Edge, Brave, etc.):
+  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
+  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
+- Firefox:
+  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
 
-## Bonus Features (Planned)
+## Type Support for `.vue` Imports in TS
 
-- JWT Authentication
-- Search/Filter/Sorting for recipes
-- File/Image Upload for recipe photos
-- Responsive UI
-(Future: Recipe rating, commenting, meal planning)
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
 
-## Future AI Integration Ideas
+## Customize configuration
 
-- Recipe Recommendation Engine
-- Dietary Analysis
-- Ingredient Substitution Suggestions
+See [Vite Configuration Reference](https://vite.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Type-Check, Compile and Minify for Production
+
+```sh
+npm run build
+```
+
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+```sh
+npm run test:unit
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```
