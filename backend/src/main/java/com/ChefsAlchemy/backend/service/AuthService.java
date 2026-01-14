@@ -19,10 +19,10 @@ public class AuthService {
 
     // this method is for registering a new user
     public void registerUser(RegisterRequest registerRequest) {
-        if (userRepository.existsbyUsername(registerRequest.getUsername())) {
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
             throw new RuntimeException("error: username already taken");
         }
-        if (userRepository.existsbyEmail(registerRequest.getEmail())) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new RuntimeException("error: email already taken");
         }
         // create new user's account
