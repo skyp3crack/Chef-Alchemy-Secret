@@ -2,6 +2,23 @@ import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:8080/api'
 
+export interface LoginResponse {
+    id: number
+    username: string
+    email: string
+    roles: string[]
+    tokenType: string
+    accessToken: string
+}
+
+export interface UserData {
+    id: number
+    username: string
+    email: string
+    roles: string[]
+    token: string
+}
+
 class AuthService {
     async register(username: string, email: string, password: string): Promise<string> {
         try {
@@ -21,6 +38,60 @@ class AuthService {
             }
         }
     }
+
+    async login(username: string, password: string): Promise<UserData> {
+        try {
+            const response = await axios.post<LoginResponse>(`${API_URL}/auth/login`, {
+                username,
+                password
+            })
+
+            if (response.data.accessToken) {
+                const userData: UserData = {
+                    id: response.data.id,
+                    username: response.data.username,
+                    email: response.data.email,
+                    roles: response.data.roles,
+                    token: response.data.accessToken
+                }
+                // Store user data in localStorage
+                localStorage.setItem('user', JSON.stringify(userData))
+                return userData
+            }
+            throw new Error('No token received')
+        } catch (error: any) {
+            if (error.response) {
+                throw new Error(error.response.data || 'Login failed')
+            } else if (error.request) {
+                throw new Error('No response from server. Is the backend running?')
+            } else {
+                throw new Error('Error during login: ' + error.message)
+            }
+        }
+    }
+
+    logout(): void {
+        localStorage.removeItem('user')
+    }
+
+    getCurrentUser(): UserData | null {
+        const userStr = localStorage.getItem('user')
+        if (userStr) {
+            return JSON.parse(userStr)
+        }
+        return null
+    }
+
+    isLoggedIn(): boolean {
+        return this.getCurrentUser() !== null
+    }
+
+    getToken(): string | null {
+        const user = this.getCurrentUser()
+        return user ? user.token : null
+    }
+
 }
+
 
 export default new AuthService()
