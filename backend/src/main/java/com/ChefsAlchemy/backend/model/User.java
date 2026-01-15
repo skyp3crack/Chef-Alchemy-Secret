@@ -89,4 +89,8 @@ public class User {
         this.roles = roles;
     }
 
+    public Set<String> getRoles() {
+        return roles;
+    }
+
 }
