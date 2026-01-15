@@ -5,17 +5,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import com.ChefsAlchemy.backend.service.UserDetailsServiceImpl;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import com.ChefsAlchemy.backend.security.jwt.AuthTokenFilter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @EnableWebSecurity
@@ -23,14 +23,16 @@ import com.ChefsAlchemy.backend.security.jwt.AuthTokenFilter;
 public class SecurityConfig {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Bean // @Bean is used to define a bean in the Spring application context
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService); // set user details service
-        authenticationProvider.setPasswordEncoder(passwordEncoder()); // set password encoder
-        return authenticationProvider;
+        // 2. Use the full path if the error persists to force Java to find it
+        org.springframework.security.authentication.dao.DaoAuthenticationProvider authProvider = new org.springframework.security.authentication.dao.DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean // define authentication manager is used to provide authentication to the
@@ -48,12 +50,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // disable csrf for stateless restapi meaning no session for development
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // disable
+                                                                                                              // session
+                                                                                                              // management
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // allow access to all for registeration
                         .anyRequest().authenticated()// then all other requests require authentication
                 );
 
-        // we will add session management and jwt configuration later on
+        // jwt configuration
         http.authenticationProvider(authenticationProvider()); // set authentication provider
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // add jwt
                                                                                                           // filter
@@ -63,5 +68,10 @@ public class SecurityConfig {
                                                                                                           // authentication
                                                                                                           // filter
         return http.build();
+    }
+
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
     }
 }
