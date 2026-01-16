@@ -26,13 +26,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    // For now, we'll keep roles simple. We can expand this later.
-    // For a basic registration, a user might just have a default 'ROLE_USER'.
-    // We'll add a default role in the service layer.
     @ElementCollection(fetch = FetchType.EAGER) // Eagerly load roles with user
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     private Set<String> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true) // one2many with recipe
+    private Set<Recipe> recipes = new HashSet<>();
 
     // Constructor is use to create a new object
     public User() {
@@ -44,10 +44,6 @@ public class User {
         this.password = password;
         this.roles.add("ROLE_USER");
     }
-
-    // why do we create getter and setter? //Getter is use to get the value of a
-    // variable
-    // Setter is use to set the value of a variable
 
     public Long getId() {
         return id;
@@ -91,6 +87,14 @@ public class User {
 
     public Set<String> getRoles() {
         return roles;
+    }
+
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
     }
 
 }
