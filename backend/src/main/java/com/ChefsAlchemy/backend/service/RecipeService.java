@@ -3,7 +3,7 @@ package com.ChefsAlchemy.backend.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -53,8 +53,9 @@ public class RecipeService {
                 recipeRequest.getInstructions(),
                 recipeRequest.getImageUrl(),
                 currentUser);
-        recipeRepository.save(recipe);
-        return convertToDto(recipe);
+        Recipe savedRecipe = recipeRepository.save(recipe);
+        return convertToDto(savedRecipe);
+
     }
 
     @Transactional
