@@ -1,17 +1,27 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import HomePage from '@/views/HomePage.vue'
-import RegisterForm from '../components/auth/RegisterForm.vue';
+import RegisterPage from '@/views/RegisterPage.vue';
+import LoginPage from '@/views/LoginPage.vue';
+import AuthService from '@/services/auth.service';
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
     component: HomePage,
+    meta: { requiresAuth: true },
   },
   {
     path: '/register',
     name: 'Register',
-    component: RegisterForm,
+    component: RegisterPage,
+    meta: { guest: true },
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginPage,
+    meta: { guest: true },
   },
   // Catch-all route for 404
   {
@@ -19,19 +29,30 @@ const routes: Array<RouteRecordRaw> = [
     name: 'NotFound',
     component: () => import('@/views/NotFoundPage.vue')
   },
-  // You can add a login route here later
-  // {
-  //   path: '/login',
-  //   name: 'Login',
-  //   component: LoginPage
-  // }
 ]
-
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
+});
+
+
+//navigation guard
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = AuthService.isLoggedIn()
+
+  // If route requires auth and user is not logged in
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    next('/login')
+  }
+  // If route is for guests only and user is logged in
+  else if (to.meta.guest && isLoggedIn) {
+    next('/')
+  }
+  else {
+    next()
+  }
+
 });
 
 export default router

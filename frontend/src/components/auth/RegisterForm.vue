@@ -56,6 +56,10 @@ const handleRegister = async () => {
             <div v-if="message" :class="{'success-message': isSuccess, 'error-message': !isSuccess}">
                 {{ message }}
             </div>
+            <p class="switch-auth">
+                Already have an account? 
+                <router-link to="/login">Login here</router-link>
+            </p>
         </form>
     </div>
 </template>

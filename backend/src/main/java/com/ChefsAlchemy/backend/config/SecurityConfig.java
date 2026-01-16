@@ -27,7 +27,6 @@ public class SecurityConfig {
 
     @Bean // @Bean is used to define a bean in the Spring application context
     public AuthenticationProvider authenticationProvider() {
-        // 2. Use the full path if the error persists to force Java to find it
         org.springframework.security.authentication.dao.DaoAuthenticationProvider authProvider = new org.springframework.security.authentication.dao.DaoAuthenticationProvider();
 
         authProvider.setUserDetailsService(userDetailsService);
