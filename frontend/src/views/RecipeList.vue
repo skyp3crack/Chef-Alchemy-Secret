@@ -9,7 +9,7 @@
 
         <div v-if="loading" class="loading-message">loading recipess chilll.....</div>
         <div v-else-if="error" class="error-message">{{ error }}</div>
-        <div v-else-if="recipes.length === 0" class="no-recipes">No recipes found</div>
+        <div v-else-if="recipes.length === 0" class="no-recipes-message">No recipes found</div>
         <div v-else class="recipe-grid">
             <RecipeCard v-for="recipe in recipes" :key="recipe.id" :recipe="recipe" /> 
         </div>

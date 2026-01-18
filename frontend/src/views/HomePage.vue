@@ -35,10 +35,6 @@
           <h3>🔍 Explore</h3>
           <p>Discover new recipes</p>
         </router-link>
-        <div class="action-card">
-          <h3>🔍 Explore</h3>
-          <p>Discover new recipes</p>
-        </div>
       </div>
       </main>
   </div>

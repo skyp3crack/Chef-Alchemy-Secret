@@ -40,6 +40,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/recipes/:id/edit',
+    name: 'EditRecipe',
+    component: AddEditRecipePage,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/recipes/:id',
     name: 'RecipeDetail',
     component: RecipeDetail,
