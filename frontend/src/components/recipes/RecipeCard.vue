@@ -18,6 +18,7 @@
 
 
 <script setup lang="ts">
+
 import type { Recipe } from '@/services/recipe.service' //import type Recipe from recipe.ts
 
 const props = defineProps<{recipe:Recipe}>(); //this prop used to pass recipe data to the component
