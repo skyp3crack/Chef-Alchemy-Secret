@@ -1,12 +1,16 @@
 import api from "./api";
 
 export interface Recipe {
-    id: number;
+    id?: number;
     title: string;
     description: string;
     ingredients: string;
     instructions: string;
-    imageUrl: string;
+    imageUrl?: string;
+    authorUsername?: string;
+    authorId?: number;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 class RecipeService {
