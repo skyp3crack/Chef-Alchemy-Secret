@@ -4,6 +4,9 @@ import RegisterPage from '@/views/RegisterPage.vue';
 import LoginPage from '@/views/LoginPage.vue';
 import RecipeList from '@/views/RecipeList.vue';
 import AuthService from '@/services/auth.service';
+import AddEditRecipePage from '@/views/AddEditRecipePage.vue';
+
+import RecipeDetail from '@/views/RecipeDetail.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -28,6 +31,18 @@ const routes: RouteRecordRaw[] = [
     path: '/recipes',
     name: 'RecipeList',
     component: RecipeList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/recipes/add',
+    name: 'AddRecipe',
+    component: AddEditRecipePage,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/recipes/:id',
+    name: 'RecipeDetail',
+    component: RecipeDetail,
     meta: { requiresAuth: true },
   },
   // Catch-all route for 404
