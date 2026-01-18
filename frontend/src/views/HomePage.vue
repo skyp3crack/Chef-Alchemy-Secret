@@ -1,6 +1,11 @@
 <template>
   <div class="home-container">
+    <header class="header">
     <h1>Welcome to Chef's Alchemy Secret</h1>
+    <nav class="main-nav">
+    <router-link to="/recipes" class="nav-link">Recipes</router-link>
+    <router-link to="recipes/add" class="nav-link">Add Recipe</router-link>
+    </nav>
     <div class="user-info" v-if="user">
       <span>{{ user.username }}!</span>
       <button @click="handleLogout" class="logout-btn">Logout</button>
@@ -10,22 +15,32 @@
       <router-link to="/login" class="btn">Login</router-link>
       <router-link to="/register" class="btn">Get Started - Register</router-link>
     </div>
+    </header>
     <p>Your personal recipe sharing platform</p>
 
+    <main class="main-content">
+      <h2>Making your cooking journey easier</h2>
+      <p>With Chef's Alchemy Secret, you can easily save and share your favorite recipes with others.</p>
     <div class="quick-actions">
-        <div class="action-card">
+        
+      <router-link to="/recipes" class="action-card">
           <h3>📝 My Recipes</h3>
           <p>View and manage your recipes</p>
-        </div>
-        <div class="action-card">
+        </router-link>
+        <router-link to="/recipes/add" class="action-card">
           <h3>➕ Add Recipe</h3>
           <p>Create a new recipe</p>
-        </div>
+        </router-link>
+        <router-link to="/recipes" class="action-card">
+          <h3>🔍 Explore</h3>
+          <p>Discover new recipes</p>
+        </router-link>
         <div class="action-card">
           <h3>🔍 Explore</h3>
           <p>Discover new recipes</p>
         </div>
       </div>
+      </main>
   </div>
 </template>
 
@@ -33,7 +48,6 @@
 import { ref , onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthService, {type UserData} from '@/services/auth.service';
-
 const router = useRouter();
 const user = ref<UserData | null>(null); //ref<UserData meaning user data type and null>(null) null value no user data
 
@@ -67,6 +81,24 @@ onMounted(()=>{
 .header h1 {
   margin: 0;
   font-size: 24px;
+}
+
+.main-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .user-info {
@@ -126,6 +158,8 @@ onMounted(()=>{
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-align: center;
+  text-decoration: none; /* For router-link */
+  color: inherit; /* For router-link */
 }
 
 .action-card:hover {
