@@ -11,15 +11,15 @@ public class RecipeRequest {
     private String title;
 
     @NotBlank
-    @Size(min = 10)
+    @Size(min = 3)
     private String description;
 
     @NotBlank
-    @Size(min = 10)
+    @Size(min = 3)
     private String ingredients;
 
     @NotBlank
-    @Size(min = 10)
+    @Size(min = 3)
     private String instructions;
 
     private String imageUrl;

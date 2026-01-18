@@ -16,7 +16,7 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank
-    @Size(min = 8)
+    @Size(min = 3)
     private String password;
 
     // why do we need contructor is for creating a new object
