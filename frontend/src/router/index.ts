@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import HomePage from '@/views/HomePage.vue'
 import RegisterPage from '@/views/RegisterPage.vue';
 import LoginPage from '@/views/LoginPage.vue';
+import RecipeList from '@/views/RecipeList.vue';
 import AuthService from '@/services/auth.service';
 
 const routes: RouteRecordRaw[] = [
@@ -22,6 +23,12 @@ const routes: RouteRecordRaw[] = [
     name: 'Login',
     component: LoginPage,
     meta: { guest: true },
+  },
+  {
+    path: '/recipes',
+    name: 'RecipeList',
+    component: RecipeList,
+    meta: { requiresAuth: true },
   },
   // Catch-all route for 404
   {
