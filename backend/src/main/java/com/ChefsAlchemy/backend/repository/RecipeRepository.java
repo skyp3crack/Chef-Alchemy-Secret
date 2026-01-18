@@ -1,3 +1,5 @@
+package com.ChefsAlchemy.backend.repository;
+
 import org.springframework.stereotype.Repository;
 
 import com.ChefsAlchemy.backend.model.Recipe;

@@ -5,6 +5,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.transaction.Transactional;
+import java.util.List;
+import com.ChefsAlchemy.backend.dto.RecipeRequest;
+import com.ChefsAlchemy.backend.dto.RecipeResponse;
+import com.ChefsAlchemy.backend.model.Recipe;
+import com.ChefsAlchemy.backend.model.User;
+import com.ChefsAlchemy.backend.repository.RecipeRepository;
+import com.ChefsAlchemy.backend.repository.UserRepository;
+import com.ChefsAlchemy.backend.security.jwt.JwtUtils;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class RecipeService {
@@ -45,8 +58,8 @@ public class RecipeService {
 
     @Transactional // transactional used to ensure data consistency
     public RecipeResponse createRecipe(RecipeRequest recipeRequest) { // create recipe
-        User currentUser = getCurrentAuthenticatedUser();
-        Recipe recipe = new RecipeService(
+        User currentUser = getCurrentUser();
+        Recipe recipe = new Recipe(
                 recipeRequest.getTitle(),
                 recipeRequest.getDescription(),
                 recipeRequest.getIngredients(),
@@ -73,7 +86,7 @@ public class RecipeService {
 
     @Transactional
     public RecipeResponse updateRecipe(Long id, RecipeRequest recipeRequest) {
-        User currentUser = getCurrentAuthenticatedUser();
+        User currentUser = getCurrentUser();
         Recipe existingRecipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Recipe not found with id: " + id));
 
@@ -94,7 +107,7 @@ public class RecipeService {
 
     @Transactional
     public void deleteRecipe(Long id) {
-        User currentUser = getCurrentAuthenticatedUser();
+        User currentUser = getCurrentUser();
         Recipe existingRecipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Recipe not found with id: " + id));
 

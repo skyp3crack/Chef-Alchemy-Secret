@@ -1,3 +1,7 @@
+package com.ChefsAlchemy.backend.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 //recipe request dto as a data transfer 
 public class RecipeRequest {

@@ -3,7 +3,6 @@ package com.ChefsAlchemy.backend.model;
 
 import jakarta.persistence.*;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 @Entity
@@ -33,7 +32,7 @@ public class User {
     private Set<String> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true) // one2many with recipe
-    private Set<Recipe> recipes = new ArrayList<>();
+    private Set<Recipe> recipes = new HashSet<>();
 
     // Constructor is use to create a new object
     public User() {
@@ -90,11 +89,11 @@ public class User {
         return roles;
     }
 
-    public List<Recipe> getRecipes() {
+    public Set<Recipe> getRecipes() {
         return recipes;
     }
 
-    public void setRecipes(List<Recipe> recipes) {
+    public void setRecipes(Set<Recipe> recipes) {
         this.recipes = recipes;
     }
 

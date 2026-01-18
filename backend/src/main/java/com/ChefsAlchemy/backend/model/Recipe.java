@@ -6,6 +6,7 @@ import org.hibernate.annotations.ManyToAny;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import com.ChefsAlchemy.backend.model.User;
 
 @Entity
 @Table(name = "recipes")
