@@ -10,8 +10,12 @@ import com.ChefsAlchemy.backend.dto.RecipeRequest;
 import com.ChefsAlchemy.backend.dto.RecipeResponse;
 import com.ChefsAlchemy.backend.model.Recipe;
 import com.ChefsAlchemy.backend.model.User;
+import com.ChefsAlchemy.backend.model.Category;
+import com.ChefsAlchemy.backend.model.Tag;
 import com.ChefsAlchemy.backend.repository.RecipeRepository;
 import com.ChefsAlchemy.backend.repository.UserRepository;
+import com.ChefsAlchemy.backend.repository.CategoryRepository;
+import com.ChefsAlchemy.backend.repository.TagRepository;
 import com.ChefsAlchemy.backend.security.jwt.JwtUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -29,6 +33,12 @@ public class RecipeService {
     private UserRepository userRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
     private JwtUtils jwtUtils; // getting username from token if needed.
 
     // get the current authenticated user
@@ -43,6 +53,14 @@ public class RecipeService {
     }
 
     private RecipeResponse convertToDto(Recipe recipe) { // convert recipe to dto for response
+
+        List<String> categoryNames = recipe.getCategories().stream()
+                .map(Category::getName)
+                .collect(Collectors.toList());
+        List<String> tagNames = recipe.getTags().stream()
+                .map(Tag::getName)
+                .collect(Collectors.toList());
+
         return new RecipeResponse(
                 recipe.getId(),
                 recipe.getTitle(),
@@ -52,6 +70,8 @@ public class RecipeService {
                 recipe.getImageUrl(),
                 recipe.getAuthor().getId(),
                 recipe.getAuthor().getUsername(),
+                categoryNames,
+                tagNames,
                 recipe.getCreatedAt(),
                 recipe.getUpdatedAt());
     }
@@ -66,6 +86,20 @@ public class RecipeService {
                 recipeRequest.getInstructions(),
                 recipeRequest.getImageUrl(),
                 currentUser);
+
+        // handle tags and categories
+        if (recipeRequest.getCategoriesIds() != null && !recipeRequest.getCategoriesIds().isEmpty()) {
+            Set<Category> categories = new HashSet<>(
+                    categoryRepository.findAllById(recipeRequest.getCategoriesIds()));
+            recipe.setCategories(categories);
+        }
+
+        if (recipeRequest.getTagsIds() != null && !recipeRequest.getTagsIds().isEmpty()) {
+            Set<Tag> tags = new HashSet<>(
+                    tagRepository.findAllById(recipeRequest.getTagsIds()));
+            recipe.setTags(tags);
+        }
+
         Recipe savedRecipe = recipeRepository.save(recipe);
         return convertToDto(savedRecipe);
 
@@ -100,6 +134,22 @@ public class RecipeService {
         existingRecipe.setIngredients(recipeRequest.getIngredients());
         existingRecipe.setInstructions(recipeRequest.getInstructions());
         existingRecipe.setImageUrl(recipeRequest.getImageUrl());
+
+        // Update Categories
+        if (recipeRequest.getCategoryIds() != null) {
+            Set<Category> categories = new HashSet<>(categoryRepository.findAllById(recipeRequest.getCategoryIds()));
+            existingRecipe.setCategories(categories);
+        } else {
+            existingRecipe.setCategories(new HashSet<>()); // Clear if no categories provided
+        }
+
+        // Update Tags
+        if (recipeRequest.getTagIds() != null) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(recipeRequest.getTagIds()));
+            existingRecipe.setTags(tags);
+        } else {
+            existingRecipe.setTags(new HashSet<>()); // Clear if no tags provided
+        }
 
         Recipe updatedRecipe = recipeRepository.save(existingRecipe);
         return convertToDto(updatedRecipe);
