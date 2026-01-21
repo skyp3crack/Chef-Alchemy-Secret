@@ -39,7 +39,7 @@ class AuthService {
         }
     }
 
-    async login(username: string, password: string): Promise<UserData> {
+    async login(username: string, password: string, rememberMe: boolean): Promise<UserData> {
         try {
             const response = await axios.post<LoginResponse>(`${API_URL}/auth/login`, {
                 username,
@@ -55,7 +55,11 @@ class AuthService {
                     token: response.data.accessToken
                 }
                 // Store user data in localStorage
-                localStorage.setItem('user', JSON.stringify(userData))
+                if (rememberMe) {
+                    localStorage.setItem('user', JSON.stringify(userData))
+                } else {
+                    sessionStorage.setItem('user', JSON.stringify(userData))
+                }
                 return userData
             }
             throw new Error('No token received')
@@ -72,10 +76,11 @@ class AuthService {
 
     logout(): void {
         localStorage.removeItem('user')
+        sessionStorage.removeItem('user')
     }
 
     getCurrentUser(): UserData | null {
-        const userStr = localStorage.getItem('user')
+        const userStr = localStorage.getItem('user') || sessionStorage.getItem('user')
         if (userStr) {
             return JSON.parse(userStr)
         }

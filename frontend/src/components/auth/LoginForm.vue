@@ -3,27 +3,31 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import AuthService from '@/services/auth.service';
 
-const router =useRouter()
+const router = useRouter()
 const credentials = ref({
             username: '',
             password:''
 })
+const rememberMe = ref(false)
 
 const loading = ref(false)
 const message = ref('')
 const isSuccess = ref(false)
+
+
+
 
 const handleLogin = async ()=> {
 loading.value = true //
 message.value = ''
 isSuccess.value = false
 try{
-  const user = await AuthService.login(credentials.value.username, credentials.value.password)
+  const user = await AuthService.login(credentials.value.username, credentials.value.password, rememberMe.value)
   message.value = "Login successful"
   isSuccess.value = true
   setTimeout(()=>{
-    router.push('/') //redirect to home page 
-  },1500) 
+    router.push('/') //redirect to home page
+  },1500)
 }catch(e:any){
   message.value = e.message || "Login failed"
   isSuccess.value=false
@@ -39,21 +43,29 @@ try{
     <form @submit.prevent="handleLogin">
       <div class="form-group">
         <label for="username">Username:</label>
-        <input 
-          type="text" 
-          id="username" 
-          v-model="credentials.username" 
-          required 
+        <input
+          type="text"
+          id="username"
+          v-model="credentials.username"
+          required
         />
       </div>
       <div class="form-group">
         <label for="password">Password:</label>
-        <input 
-          type="password" 
-          id="password" 
-          v-model="credentials.password" 
-          required 
+        <input
+          type="password"
+          id="password"
+          v-model="credentials.password"
+          required
         />
+      </div>
+      <div class="form-group checkbox-group">
+        <input
+          type="checkbox"
+          id="rememberMe"
+          v-model="rememberMe"
+        />
+        <label for="rememberMe">Remember Me</label>
       </div>
       <button type="submit" :disabled="loading">
         <span v-if="loading">Logging in...</span>
@@ -166,5 +178,21 @@ button:disabled {
 
 .switch-auth a:hover {
   text-decoration: underline;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group input {
+  width: auto;
+  margin-right: 10px;
+}
+
+.checkbox-group label {
+  margin-bottom: 0;
+  display: inline;
+  font-weight: normal;
 }
 </style>
