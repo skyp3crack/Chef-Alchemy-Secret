@@ -2,6 +2,8 @@
 package com.ChefsAlchemy.backend.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 public class RecipeResponse {
     private Long id;
@@ -12,6 +14,8 @@ public class RecipeResponse {
     private String imageUrl;
     private Long authorId;
     private String authorUsername;
+    private Set<CategoryResponse> categories;
+    private Set<TagResponse> tags;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -19,7 +23,9 @@ public class RecipeResponse {
     }
 
     public RecipeResponse(Long id, String title, String description, String ingredients, String instructions,
-            String imageUrl, Long authorId, String authorUsername, LocalDateTime createdAt, LocalDateTime updatedAt) {
+            String imageUrl, Long authorId, String authorUsername,
+            Set<CategoryResponse> categories, Set<TagResponse> tags,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -28,6 +34,8 @@ public class RecipeResponse {
         this.imageUrl = imageUrl;
         this.authorId = authorId;
         this.authorUsername = authorUsername;
+        this.categories = categories;
+        this.tags = tags;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -95,6 +103,22 @@ public class RecipeResponse {
 
     public void setAuthorUsername(String authorUsername) {
         this.authorUsername = authorUsername;
+    }
+
+    public Set<CategoryResponse> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<CategoryResponse> categories) {
+        this.categories = categories;
+    }
+
+    public Set<TagResponse> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<TagResponse> tags) {
+        this.tags = tags;
     }
 
     public LocalDateTime getCreatedAt() {

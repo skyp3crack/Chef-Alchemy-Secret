@@ -2,8 +2,12 @@ package com.ChefsAlchemy.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 
 //recipe request dto as a data transfer 
+//after created model->reposioty->dto
+//dto is used to transfer data between layers as 
+// in this case we used to store ids of categories and tags in recipe request dto
 public class RecipeRequest {
 
     @NotBlank
@@ -24,15 +28,21 @@ public class RecipeRequest {
 
     private String imageUrl;
 
+    private List<String> tagsIds;
+    private List<String> categoriesIds;
+
     public RecipeRequest() {
     }
 
-    public RecipeRequest(String title, String description, String ingredients, String instructions, String imageUrl) {
+    public RecipeRequest(String title, String description, String ingredients, String instructions, String imageUrl,
+            List<String> tagsIds, List<String> categoriesIds) {
         this.title = title;
         this.description = description;
         this.ingredients = ingredients;
         this.instructions = instructions;
         this.imageUrl = imageUrl;
+        this.tagsIds = tagsIds;
+        this.categoriesIds = categoriesIds;
     }
 
     public String getTitle() {
@@ -73,6 +83,22 @@ public class RecipeRequest {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public void setTagsIds(List<String> tagsIds) {
+        this.tagsIds = tagsIds;
+    }
+
+    public void setCategoriesIds(List<String> categoriesIds) {
+        this.categoriesIds = categoriesIds;
+    }
+
+    public List<String> getTagsIds() {
+        return tagsIds;
+    }
+
+    public List<String> getCategoriesIds() {
+        return categoriesIds;
     }
 
 }
