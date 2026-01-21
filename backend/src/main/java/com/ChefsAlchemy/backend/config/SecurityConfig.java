@@ -54,6 +54,8 @@ public class SecurityConfig {
                                                                                                               // management
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // allow access to all for registeration
+                        .requestMatchers("/api/categories/**").permitAll() // allow public accesss to categories
+                        .requestMatchers("/api/tags/**").permitAll() // allow public accesss to tags
                         .anyRequest().authenticated()// then all other requests require authentication
                 );
 
