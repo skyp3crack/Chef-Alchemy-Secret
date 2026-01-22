@@ -1,5 +1,16 @@
 import api from "./api";
 
+
+export interface Tag {
+    id: number;
+    name: string;
+}
+
+export interface Category {
+    id: number;
+    name: string;
+}
+
 export interface Recipe {
     id?: number;
     title: string;
@@ -11,6 +22,10 @@ export interface Recipe {
     authorId?: number;
     createdAt?: string;
     updatedAt?: string;
+    tags?: string[];
+    categories?: string[];
+    tagIds?: number[];
+    categoryIds?: number[];
 }
 
 class RecipeService {
@@ -59,6 +74,23 @@ class RecipeService {
         }
     }
 
+    async getAllCategories(): Promise<Category[]> {
+        try {
+            const response = await api.get<Category[]>('/categories')
+            return response.data
+        } catch (error: any) {
+            throw new Error(error.response?.data || 'Failed to fetch categories')
+        }
+    }
+
+    async getAllTags(): Promise<Tag[]> {
+        try {
+            const response = await api.get<Tag[]>('/tags')
+            return response.data
+        } catch (error: any) {
+            throw new Error(error.response?.data || 'Failed to fetch tags')
+        }
+    }
 }
 
 export default new RecipeService()

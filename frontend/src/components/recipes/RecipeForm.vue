@@ -27,6 +27,26 @@
         <input type="url" id="imageUrl" v-model="recipe.imageUrl" />
       </div>
 
+      <div class="form-group">
+        <label for="categories">Categories:</label>
+        <select id="categories" v-model="selectedCategoryIds" multiple>
+          <option v-for="category in availableCategories" :key="category.id" :value="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <p v-if="categoryError" class="error-message">{{ categoryError }}</p>
+      </div>
+
+      <div class="form-group">
+        <label for="tags">Tags:</label>
+        <select id="tags" v-model="selectedTagIds" multiple>
+          <option v-for="tag in availableTags" :key="tag.id" :value="tag.id">
+            {{ tag.name }}
+          </option>
+        </select>
+        <p v-if="tagError" class="error-message">{{ tagError }}</p>
+      </div>
+
       <button type="submit" :disabled="loading">
         <span v-if="loading">{{ isEditMode ? 'Saving...' : 'Adding...' }}</span>
         <span v-else>{{ isEditMode ? 'Update Recipe' : 'Add Recipe' }}</span>
@@ -44,7 +64,7 @@
 
 <script setup lang="ts">
     import {ref, onMounted} from 'vue';
-    import RecipeService ,{ type Recipe} from '@/services/recipe.service';
+    import RecipeService ,{ type Recipe, type Category, type Tag} from '@/services/recipe.service';
     import {useRoute, useRouter} from 'vue-router';
 
     const route = useRoute();
@@ -60,33 +80,61 @@
             instructions: '',
             imageUrl: ''
         })
+
+        const availableCategories = ref<Category[]>([]) 
+        const availableTags = ref<Tag[]>([])           
+        const selectedCategoryIds = ref<number[]>([])   
+        const selectedTagIds = ref<number[]>([])       
+        const categoryError = ref<string | null>(null) 
+        const tagError = ref<string | null>(null)       
     
         const loading = ref(false);
         const message = ref('');
         const isSuccess = ref(false);
 
-    onMounted(async()=>{
-        if(route.params.id){ //check if there is an id in the route
-            isEditMode.value = true; //set isEditMode to true if there is an id
-            recipeId.value = Number(route.params.id); //convert id to number for type safety  
-            
-            try{
-                const fetchedRecipe = await RecipeService.getRecipeById(recipeId.value);
-                recipe.value = fetchedRecipe;
-            }catch(err:any){
-                message.value = err.message || 'Failed to load recipe';
-                isSuccess.value = false;
-            }finally{
-                loading.value = false;
-            }
-        }
-    })
+onMounted(async () => {
+  // Fetch categories and tags
+  try {
+    availableCategories.value = await RecipeService.getAllCategories()
+  } catch (err: any) {
+    categoryError.value = err.message || 'Failed to load categories.'
+  }
+  try {
+    availableTags.value = await RecipeService.getAllTags()
+  } catch (err: any) {
+    tagError.value = err.message || 'Failed to load tags.'
+  }
 
-    const handleSubmit = async () => {
-    loading.value = true;
-    message.value = '';
-    isSuccess.value = false;
+  if (route.params.id) {
+    isEditMode.value = true
+    recipeId.value = Number(route.params.id)
     try {
+      const fetchedRecipe = await RecipeService.getRecipeById(recipeId.value)
+      recipe.value = fetchedRecipe
+      // Pre-select categories and tags for editing
+      selectedCategoryIds.value = availableCategories.value
+        .filter(cat => fetchedRecipe.categories?.includes(cat.name))
+        .map(cat => cat.id)
+      selectedTagIds.value = availableTags.value
+        .filter(tag => fetchedRecipe.tags?.includes(tag.name))
+        .map(tag => tag.id)
+    } catch (err: any) {
+      message.value = err.message || 'Failed to load recipe for editing.'
+      isSuccess.value = false
+    }
+  }
+})
+
+const handleSubmit = async () => {
+  loading.value = true
+  message.value = ''
+  isSuccess.value = false
+
+  try {
+    // Assign selected IDs to the recipe object before sending
+    recipe.value.categoryIds = selectedCategoryIds.value
+    recipe.value.tagIds = selectedTagIds.value
+
     if (isEditMode.value && recipeId.value) {
       await RecipeService.updateRecipe(recipe.value)
       message.value = 'Recipe updated successfully!'
@@ -97,19 +145,20 @@
       isSuccess.value = true
       // Clear form after successful creation
       recipe.value = { title: '', description: '', ingredients: '', instructions: '', imageUrl: '' }
+      selectedCategoryIds.value = []
+      selectedTagIds.value = []
     }
     // Redirect after a short delay
     setTimeout(() => {
-        router.push('/recipes')
-        }, 1500)
-    } catch (err: any) {
-        message.value = err.message || 'An error occurred.'
-        isSuccess.value = false
-    } finally {
-        loading.value = false
-    }
+      router.push('/recipes')
+    }, 1500)
+  } catch (err: any) {
+    message.value = err.message || 'An error occurred.'
+    isSuccess.value = false
+  } finally {
+    loading.value = false
+  }
 }
-    
 </script>
 
 
@@ -145,7 +194,7 @@ label {
 
 input[type="text"],
 input[type="url"],
-textarea {
+textarea, select { 
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
@@ -156,7 +205,7 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus, select:focus {
   outline: none;
   border-color: #007bff;
 }
@@ -164,6 +213,11 @@ textarea:focus {
 textarea {
   resize: vertical;
 }
+
+select[multiple] { /* NEW: Style for multiple select */
+  min-height: 100px; /* Ensure multiple select is tall enough */
+}
+
 
 button[type="submit"] {
   width: 100%;
