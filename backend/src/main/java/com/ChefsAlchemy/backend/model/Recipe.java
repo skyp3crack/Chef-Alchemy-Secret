@@ -1,11 +1,10 @@
-
 package com.ChefsAlchemy.backend.model;
-
-import org.hibernate.annotations.ManyToAny;
 
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import java.util.Set;
+import java.util.HashSet;
 import com.ChefsAlchemy.backend.model.User;
 
 @Entity

@@ -1,4 +1,3 @@
-
 package com.ChefsAlchemy.backend.controller;
 
 import com.ChefsAlchemy.backend.model.Tag;
@@ -41,12 +40,9 @@ public class TagController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Tag> getTagById(@PathVariable Long id) {
-        try {
-            Tag tag = tagService.getTagById(id);
-            return new ResponseEntity<>(tag, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return tagService.getTagById(id)
+                .map(tag -> new ResponseEntity<>(tag, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{id}")
@@ -55,8 +51,11 @@ public class TagController {
         try {
             Tag updatedTag = tagService.updateTag(id, name);
             return new ResponseEntity<>(updatedTag, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("not found")) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -68,7 +67,7 @@ public class TagController {
         try {
             tagService.deleteTag(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (EntityNotFoundException e) {
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

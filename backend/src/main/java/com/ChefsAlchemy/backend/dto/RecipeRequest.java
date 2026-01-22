@@ -28,21 +28,21 @@ public class RecipeRequest {
 
     private String imageUrl;
 
-    private List<String> tagsIds;
-    private List<String> categoriesIds;
+    private List<Long> tagIds;
+    private List<Long> categoryIds;
 
     public RecipeRequest() {
     }
 
     public RecipeRequest(String title, String description, String ingredients, String instructions, String imageUrl,
-            List<String> tagsIds, List<String> categoriesIds) {
+            List<Long> tagIds, List<Long> categoryIds) {
         this.title = title;
         this.description = description;
         this.ingredients = ingredients;
         this.instructions = instructions;
         this.imageUrl = imageUrl;
-        this.tagsIds = tagsIds;
-        this.categoriesIds = categoriesIds;
+        this.tagIds = tagIds;
+        this.categoryIds = categoryIds;
     }
 
     public String getTitle() {
@@ -85,20 +85,20 @@ public class RecipeRequest {
         this.imageUrl = imageUrl;
     }
 
-    public void setTagsIds(List<String> tagsIds) {
-        this.tagsIds = tagsIds;
+    public void setTagIds(List<Long> tagIds) {
+        this.tagIds = tagIds;
     }
 
-    public void setCategoriesIds(List<String> categoriesIds) {
-        this.categoriesIds = categoriesIds;
+    public void setCategoryIds(List<Long> categoryIds) {
+        this.categoryIds = categoryIds;
     }
 
-    public List<String> getTagsIds() {
-        return tagsIds;
+    public List<Long> getTagIds() {
+        return tagIds;
     }
 
-    public List<String> getCategoriesIds() {
-        return categoriesIds;
+    public List<Long> getCategoryIds() {
+        return categoryIds;
     }
 
 }

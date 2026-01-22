@@ -6,8 +6,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.Collectors;
+import java.util.Optional;
+
 import com.ChefsAlchemy.backend.dto.RecipeRequest;
 import com.ChefsAlchemy.backend.dto.RecipeResponse;
+import com.ChefsAlchemy.backend.dto.CategoryResponse;
+import com.ChefsAlchemy.backend.dto.TagResponse;
 import com.ChefsAlchemy.backend.model.Recipe;
 import com.ChefsAlchemy.backend.model.User;
 import com.ChefsAlchemy.backend.model.Category;
@@ -20,8 +27,6 @@ import com.ChefsAlchemy.backend.security.jwt.JwtUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.stream.Collectors;
-import java.util.Optional;
 
 @Service
 public class RecipeService {
@@ -54,12 +59,13 @@ public class RecipeService {
 
     private RecipeResponse convertToDto(Recipe recipe) { // convert recipe to dto for response
 
-        List<String> categoryNames = recipe.getCategories().stream()
-                .map(Category::getName)
-                .collect(Collectors.toList());
-        List<String> tagNames = recipe.getTags().stream()
-                .map(Tag::getName)
-                .collect(Collectors.toList());
+        Set<CategoryResponse> categoryResponses = recipe.getCategories().stream()
+                .map(category -> new CategoryResponse(category.getId(), category.getName()))
+                .collect(Collectors.toSet());
+
+        Set<TagResponse> tagResponses = recipe.getTags().stream()
+                .map(tag -> new TagResponse(tag.getId(), tag.getName()))
+                .collect(Collectors.toSet());
 
         return new RecipeResponse(
                 recipe.getId(),
@@ -70,8 +76,8 @@ public class RecipeService {
                 recipe.getImageUrl(),
                 recipe.getAuthor().getId(),
                 recipe.getAuthor().getUsername(),
-                categoryNames,
-                tagNames,
+                categoryResponses,
+                tagResponses,
                 recipe.getCreatedAt(),
                 recipe.getUpdatedAt());
     }
@@ -88,15 +94,15 @@ public class RecipeService {
                 currentUser);
 
         // handle tags and categories
-        if (recipeRequest.getCategoriesIds() != null && !recipeRequest.getCategoriesIds().isEmpty()) {
+        if (recipeRequest.getCategoryIds() != null && !recipeRequest.getCategoryIds().isEmpty()) {
             Set<Category> categories = new HashSet<>(
-                    categoryRepository.findAllById(recipeRequest.getCategoriesIds()));
+                    categoryRepository.findAllById(recipeRequest.getCategoryIds()));
             recipe.setCategories(categories);
         }
 
-        if (recipeRequest.getTagsIds() != null && !recipeRequest.getTagsIds().isEmpty()) {
+        if (recipeRequest.getTagIds() != null && !recipeRequest.getTagIds().isEmpty()) {
             Set<Tag> tags = new HashSet<>(
-                    tagRepository.findAllById(recipeRequest.getTagsIds()));
+                    tagRepository.findAllById(recipeRequest.getTagIds()));
             recipe.setTags(tags);
         }
 
