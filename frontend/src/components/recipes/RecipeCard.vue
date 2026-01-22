@@ -8,6 +8,12 @@
             <h3 class="recipe-title">{{ recipe.title }}</h3>
             <p class="recipe-author">{{ recipe.authorUsername }}</p>
             <p class="recipe-description">{{ truncateDescription(recipe.description) }}</p>
+            <div class="card-meta" v-if="recipe.tags && recipe.tags.length > 0">
+              <span v-for="(tag, index) in recipe.tags.slice(0, 3)" :key="tag" class="meta-tag">
+                {{ tag }}<span v-if="index < recipe.tags.slice(0,3).length - 1">, </span>
+              </span>
+              <span v-if="recipe.tags.length > 3">...</span>
+            </div>
             <router-link :to="{ name: 'RecipeDetail', params: { id: recipe.id } }" class="view-details-btn">
         View Details
       </router-link>
@@ -80,6 +86,21 @@ const truncateDescription = (description:string | undefined) =>{
   line-height: 1.5;
   margin-bottom: 15px;
   flex-grow: 1;
+}
+
+.card-meta {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 0.8em;
+  color: #777;
+}
+
+.meta-tag {
+  background-color: #e9ecef;
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-right: 5px;
+  white-space: nowrap;
 }
 
 .view-details-btn {

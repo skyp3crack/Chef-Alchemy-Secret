@@ -2,6 +2,7 @@ package com.ChefsAlchemy.backend.controller;
 
 import com.ChefsAlchemy.backend.model.Tag;
 import com.ChefsAlchemy.backend.service.TagService;
+import com.ChefsAlchemy.backend.dto.TagResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:5173", maxAge = 3600)
 @RestController
@@ -20,8 +22,10 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping
-    public ResponseEntity<List<Tag>> getAllTags() {
-        List<Tag> tags = tagService.getAllTags();
+    public ResponseEntity<List<TagResponse>> getAllTags() {
+        List<TagResponse> tags = tagService.getAllTags().stream()
+                .map(tag -> new TagResponse(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
         return new ResponseEntity<>(tags, HttpStatus.OK);
     }
 

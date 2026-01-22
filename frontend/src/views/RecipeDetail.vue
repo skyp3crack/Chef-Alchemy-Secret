@@ -9,6 +9,20 @@
       <p class="recipe-detail-author">By: {{ recipe.authorUsername }}</p>
       <p class="recipe-detail-date">Created: {{ formatDate(recipe.createdAt) }}</p>
 
+      <div class="recipe-meta" v-if="recipe.categories && recipe.categories.length>0">
+        <strong>Categories:</strong>
+        <span v-for="category in recipe.categories" :key="category" class="category-tag">
+            {{ category }}
+        </span>
+      </div>
+
+       <div class="recipe-meta" v-if="recipe.tags && recipe.tags.length > 0">
+        <strong>Tags:</strong>
+        <span v-for="tag in recipe.tags" :key="tag" class="meta-item category-tag">
+          {{ tag }}
+        </span>
+      </div>
+
       <div class="recipe-section">
         <h2>Description</h2>
         <p>{{ recipe.description }}</p>
@@ -38,7 +52,6 @@
 <script setup lang="ts">
     import {ref,onMounted,computed} from 'vue';
     import RecipeService, {type Recipe} from '@/services/recipe.service';
-    import RecipeCard from '@/components/recipes/RecipeCard.vue';
     import {useRoute,useRouter} from 'vue-router';
 import authService from '@/services/auth.service';
 
@@ -124,6 +137,29 @@ import authService from '@/services/auth.service';
   color: #777;
   text-align: center;
   margin-bottom: 5px;
+}
+
+.recipe-meta {
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-size: 0.95em;
+  color: #555;
+}
+
+.recipe-meta strong {
+  margin-right: 8px;
+  color: #333;
+}
+
+.meta-item {
+  display: inline-block;
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 5px 10px;
+  border-radius: 15px;
+  margin: 0 5px 5px 0;
+  font-size: 0.85em;
 }
 
 .recipe-section {
