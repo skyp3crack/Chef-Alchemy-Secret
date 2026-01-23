@@ -8,6 +8,11 @@
             <h3 class="recipe-title">{{ recipe.title }}</h3>
             <p class="recipe-author">{{ recipe.authorUsername }}</p>
             <p class="recipe-description">{{ truncateDescription(recipe.description) }}</p>
+            <div class="card-rating" v-if="recipe.averageRating !== undefined">
+            <StarRating :modelValue="recipe.averageRating" :editable="false" />
+            <span class="rating-score">{{ recipe.averageRating?.toFixed(1) }}</span>
+            <span class="rating-count">({{ recipe.ratingCount || 0 }})</span>
+            </div>
             <div class="card-meta" v-if="recipe.tags && recipe.tags.length > 0">
               <span v-for="(tag, index) in recipe.tags.slice(0, 3)" :key="tag" class="meta-tag">
                 {{ tag }}<span v-if="index < recipe.tags.slice(0,3).length - 1">, </span>
@@ -26,7 +31,7 @@
 <script setup lang="ts">
 
 import type { Recipe } from '@/services/recipe.service' //import type Recipe from recipe.ts
-
+import StarRating from '@/components/common/StarRating.vue'
 const props = defineProps<{recipe:Recipe}>(); //this prop used to pass recipe data to the component
 
 const truncateDescription = (description:string | undefined) =>{
@@ -86,6 +91,29 @@ const truncateDescription = (description:string | undefined) =>{
   line-height: 1.5;
   margin-bottom: 15px;
   flex-grow: 1;
+}
+.card-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* Added margin-bottom */
+  font-size: 0.9em;
+  color: #777;
+}
+
+.card-rating .star-rating {
+  font-size: 1.2em; /* Adjust star size in card */
+  margin-right: 5px;
+}
+
+.card-rating .rating-score {
+  font-weight: 600;
+  color: #333;
+  margin-right: 3px;
+}
+
+.card-rating .rating-count {
+  font-size: 0.85em;
+  color: #999;
 }
 
 .card-meta {
