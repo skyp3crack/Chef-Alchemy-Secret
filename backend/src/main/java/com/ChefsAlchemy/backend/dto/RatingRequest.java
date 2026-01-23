@@ -1,3 +1,5 @@
+package com.ChefsAlchemy.backend.dto;
+
 //Ratingrequest for rating
 
 import jakarta.validation.constraints.Max;

@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import com.ChefsAlchemy.backend.dto.RecipeRequest;
 import com.ChefsAlchemy.backend.dto.RecipeResponse;
+import com.ChefsAlchemy.backend.dto.ReviewResponse;
 import com.ChefsAlchemy.backend.dto.CategoryResponse;
 import com.ChefsAlchemy.backend.dto.TagResponse;
 import com.ChefsAlchemy.backend.model.Recipe;
@@ -70,12 +71,12 @@ public class RecipeService {
 
     private RecipeResponse convertToDto(Recipe recipe) { // convert recipe to dto for response
 
-        List<String> categoryNames = recipe.getCategories().stream()
-                .map(Category::getName)
-                .collect(Collectors.toList());
-        List<String> tagNames = recipe.getTags().stream()
-                .map(Tag::getName)
-                .collect(Collectors.toList());
+        Set<CategoryResponse> categories = recipe.getCategories().stream()
+                .map(category -> new CategoryResponse(category.getId(), category.getName()))
+                .collect(Collectors.toSet());
+        Set<TagResponse> tags = recipe.getTags().stream()
+                .map(tag -> new TagResponse(tag.getId(), tag.getName()))
+                .collect(Collectors.toSet());
 
         // convert reviews to reviewresponse DTOs
         List<ReviewResponse> reviewResponses = recipe.getReviews().stream()
@@ -91,8 +92,8 @@ public class RecipeService {
                 recipe.getImageUrl(),
                 recipe.getAuthor().getId(),
                 recipe.getAuthor().getUsername(),
-                categoryNames,
-                tagNames,
+                categories,
+                tags,
                 recipe.getAverageRating(),
                 recipe.getRatingCount(),
                 reviewResponses,

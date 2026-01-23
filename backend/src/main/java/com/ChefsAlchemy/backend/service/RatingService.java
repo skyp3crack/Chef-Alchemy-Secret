@@ -3,8 +3,21 @@ package com.ChefsAlchemy.backend.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
+
+import com.ChefsAlchemy.backend.repository.RatingRepository;
+import com.ChefsAlchemy.backend.repository.RecipeRepository;
+import com.ChefsAlchemy.backend.repository.UserRepository;
+import com.ChefsAlchemy.backend.model.User;
+import com.ChefsAlchemy.backend.model.Recipe;
+import com.ChefsAlchemy.backend.model.Rating;
+import com.ChefsAlchemy.backend.dto.RatingRequest;
+
+import java.util.Optional;
 
 @Service
 public class RatingService {
@@ -17,9 +30,9 @@ public class RatingService {
     @Autowired
     private UserRepository userRepository;
 
-    private User getCurrentAuthenticatedUSer() {
+    private User getCurrentAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || authentication.isAuthenticated()) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("User not authenticated");
         }
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
