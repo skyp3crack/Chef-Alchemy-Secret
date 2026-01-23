@@ -16,6 +16,9 @@ public class RecipeResponse {
     private String authorUsername;
     private Set<CategoryResponse> categories;
     private Set<TagResponse> tags;
+    private Double averageRating;
+    private Long ratingCount;
+    private List<ReviewResponse> reviews;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -25,6 +28,7 @@ public class RecipeResponse {
     public RecipeResponse(Long id, String title, String description, String ingredients, String instructions,
             String imageUrl, Long authorId, String authorUsername,
             Set<CategoryResponse> categories, Set<TagResponse> tags,
+            Double averageRating, Long ratingCount, List<ReviewResponse> reviews,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
@@ -36,6 +40,9 @@ public class RecipeResponse {
         this.authorUsername = authorUsername;
         this.categories = categories;
         this.tags = tags;
+        this.averageRating = averageRating;
+        this.ratingCount = ratingCount;
+        this.reviews = reviews;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -119,6 +126,30 @@ public class RecipeResponse {
 
     public void setTags(Set<TagResponse> tags) {
         this.tags = tags;
+    }
+
+    public Double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public Long getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Long ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
+    public List<ReviewResponse> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<ReviewResponse> reviews) {
+        this.reviews = reviews;
     }
 
     public LocalDateTime getCreatedAt() {

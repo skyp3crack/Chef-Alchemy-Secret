@@ -57,15 +57,30 @@ public class RecipeService {
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found in database."));
     }
 
+    private ReviewResponse convertReviewToDto(com.ChefsAlchemy.backend.model.Review review) {
+        return new ReviewResponse(
+                review.getId(),
+                review.getUser().getId(),
+                review.getUser().getUsername(),
+                review.getRecipe().getId(),
+                review.getComment(),
+                review.getCreatedAt(),
+                review.getUpdatedAt());
+    }
+
     private RecipeResponse convertToDto(Recipe recipe) { // convert recipe to dto for response
 
-        Set<CategoryResponse> categoryResponses = recipe.getCategories().stream()
-                .map(category -> new CategoryResponse(category.getId(), category.getName()))
-                .collect(Collectors.toSet());
+        List<String> categoryNames = recipe.getCategories().stream()
+                .map(Category::getName)
+                .collect(Collectors.toList());
+        List<String> tagNames = recipe.getTags().stream()
+                .map(Tag::getName)
+                .collect(Collectors.toList());
 
-        Set<TagResponse> tagResponses = recipe.getTags().stream()
-                .map(tag -> new TagResponse(tag.getId(), tag.getName()))
-                .collect(Collectors.toSet());
+        // convert reviews to reviewresponse DTOs
+        List<ReviewResponse> reviewResponses = recipe.getReviews().stream()
+                .map(this::convertReviewToDto)
+                .collect(Collectors.toList());
 
         return new RecipeResponse(
                 recipe.getId(),
@@ -76,8 +91,11 @@ public class RecipeService {
                 recipe.getImageUrl(),
                 recipe.getAuthor().getId(),
                 recipe.getAuthor().getUsername(),
-                categoryResponses,
-                tagResponses,
+                categoryNames,
+                tagNames,
+                recipe.getAverageRating(),
+                recipe.getRatingCount(),
+                reviewResponses,
                 recipe.getCreatedAt(),
                 recipe.getUpdatedAt());
     }
