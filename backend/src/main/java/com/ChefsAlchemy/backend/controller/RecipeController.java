@@ -47,8 +47,13 @@ public class RecipeController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) List<Long> tagIds) {
-        List<RecipeResponse> recipes = recipeService.getAllRecipes(keyword, categoryIds, tagIds);
-        return new ResponseEntity<>(recipes, HttpStatus.OK);
+        try {
+            List<RecipeResponse> recipes = recipeService.getAllRecipes(keyword, categoryIds, tagIds);
+            return new ResponseEntity<>(recipes, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace(); // This will show in console
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{id}")

@@ -133,9 +133,13 @@ public class RecipeService {
     @Transactional
     public List<RecipeResponse> getAllRecipes(String keyword, List<Long> categoryIds, List<Long> tagIds) {
         List<Recipe> recipes;
-        if (keyword != null
-                || (categoryIds != null && !categoryIds.isEmpty() || (tagIds != null && !tagIds.isEmpty()))) {
-            recipes = recipeRepository.searchAndFilterRecipes(keyword, categoryIds, tagIds);
+        // Convert null keyword to empty string to avoid PostgreSQL type inference
+        // issues
+        String searchKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword : "";
+
+        if (!searchKeyword.isEmpty() || (categoryIds != null && !categoryIds.isEmpty())
+                || (tagIds != null && !tagIds.isEmpty())) {
+            recipes = recipeRepository.searchAndFilterRecipes(searchKeyword, categoryIds, tagIds);
         } else {
             recipes = recipeRepository.findAll();
         }

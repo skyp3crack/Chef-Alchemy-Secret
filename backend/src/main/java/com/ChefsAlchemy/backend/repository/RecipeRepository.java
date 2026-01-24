@@ -33,11 +33,12 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query("SELECT DISTINCT r FROM Recipe r " +
             "LEFT JOIN r.categories c " +
             "LEFT JOIN r.tags t " +
-            "WHERE (:keyword IS NULL OR LOWER(r.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "WHERE (:keyword = '' OR (" +
+            "LOWER(r.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(r.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(r.ingredients) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-            "AND (:categoryIds IS NULL OR c.id IN :categoryIds) " +
-            "AND (:tagIds IS NULL OR t.id IN :tagIds)")
+            "LOWER(r.ingredients) LIKE LOWER(CONCAT('%', :keyword, '%')))) " +
+            "AND (:categoryIds IS NULL OR c.id IN (:categoryIds)) " +
+            "AND (:tagIds IS NULL OR t.id IN (:tagIds))")
     List<Recipe> searchAndFilterRecipes(
             @Param("keyword") String keyword,
             @Param("categoryIds") List<Long> categoryIds,
