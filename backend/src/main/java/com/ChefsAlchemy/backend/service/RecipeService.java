@@ -131,9 +131,15 @@ public class RecipeService {
     }
 
     @Transactional
-    public List<RecipeResponse> getAllRecipes() {
-        List<Recipe> recipes = recipeRepository.findAll();
-        return recipes.stream().map(this::convertToDto).collect(Collectors.toList());
+    public List<RecipeResponse> getAllRecipes(String keyword, List<Long> categoryIds, List<Long> tagIds) {
+        List<Recipe> recipes;
+        if (keyword != null
+                || (categoryIds != null && !categoryIds.isEmpty() || (tagIds != null && !tagIds.isEmpty()))) {
+            recipes = recipeRepository.searchAndFilterRecipes(keyword, categoryIds, tagIds);
+        } else {
+            recipes = recipeRepository.findAll();
+        }
+        return recipes.stream().map(this::convertToDto).collect(Collectors.toList()); // convert to dto for response
     }
 
     @Transactional

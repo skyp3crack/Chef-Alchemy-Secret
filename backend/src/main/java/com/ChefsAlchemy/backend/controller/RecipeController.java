@@ -20,6 +20,7 @@ import com.ChefsAlchemy.backend.dto.RecipeRequest;
 import com.ChefsAlchemy.backend.dto.RecipeResponse;
 import com.ChefsAlchemy.backend.service.RecipeService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin(origins = "http://localhost:5173", maxAge = 3600)
 @RestController
@@ -42,8 +43,11 @@ public class RecipeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RecipeResponse>> getAllRecipes() {
-        List<RecipeResponse> recipes = recipeService.getAllRecipes(); //
+    public ResponseEntity<List<RecipeResponse>> getAllRecipes(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) List<Long> tagIds) {
+        List<RecipeResponse> recipes = recipeService.getAllRecipes(keyword, categoryIds, tagIds);
         return new ResponseEntity<>(recipes, HttpStatus.OK);
     }
 
