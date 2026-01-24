@@ -53,10 +53,15 @@ export interface Recipe {
 
 class RecipeService {
 
-    async getAllRecipes(): Promise<Recipe[]> {
+    async getAllRecipes(keyword?: string, categoryIds?: number[], tagIds?: number[]): Promise<Recipe[]> {
+        const params: any = {}; // any is used to define a type that can be any type . and {} is used to define an object
+
+        if (keyword) params.keyword = keyword;
+        if (categoryIds && categoryIds.length > 0) params.categoryIds = categoryIds?.join(','); //join is used to join the array elements into a string
+        if (tagIds && tagIds.length > 0) params.tagIds = tagIds?.join(',');
         try {
-            const response = await api.get<Recipe[]>('/recipes')
-            return response.data
+            const response = await api.get<Recipe[]>('/recipes', { params })//{params} as parameters to pass to the backend
+            return response.data;
         } catch (e: any) {
             throw new Error(e.response.data.message || 'Failed to fetch recipes');
         }
