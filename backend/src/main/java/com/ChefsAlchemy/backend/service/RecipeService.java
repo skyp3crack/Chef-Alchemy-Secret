@@ -28,6 +28,7 @@ import com.ChefsAlchemy.backend.security.jwt.JwtUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 public class RecipeService {
@@ -43,6 +44,9 @@ public class RecipeService {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @Autowired
     private JwtUtils jwtUtils; // getting username from token if needed.
@@ -83,13 +87,21 @@ public class RecipeService {
                 .map(this::convertReviewToDto)
                 .collect(Collectors.toList());
 
+        String imageUrl = null;
+        if (recipe.getImageUrl() != null && recipe.getImageUrl().isEmpty()) {
+            imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/api/files/")
+                    .path(recipe.getImageUrl())
+                    .toUriString();
+        }
+
         return new RecipeResponse(
                 recipe.getId(),
                 recipe.getTitle(),
                 recipe.getDescription(),
                 recipe.getIngredients(),
                 recipe.getInstructions(),
-                recipe.getImageUrl(),
+                imageUrl,
                 recipe.getAuthor().getId(),
                 recipe.getAuthor().getUsername(),
                 categories,
@@ -104,12 +116,18 @@ public class RecipeService {
     @Transactional // transactional used to ensure data consistency
     public RecipeResponse createRecipe(RecipeRequest recipeRequest) { // create recipe
         User currentUser = getCurrentUser();
+
+        String fileName = null;
+        if (recipeRequest.getImageUrl() != null && !recipeRequest.getImageUrl().isEmpty()) {
+            fileName = fileStorageService.storeFile(recipeRequest.getImageUrl());
+        }
+
         Recipe recipe = new Recipe(
                 recipeRequest.getTitle(),
                 recipeRequest.getDescription(),
                 recipeRequest.getIngredients(),
                 recipeRequest.getInstructions(),
-                recipeRequest.getImageUrl(),
+                fileName,
                 currentUser);
 
         // handle tags and categories
@@ -168,7 +186,22 @@ public class RecipeService {
         existingRecipe.setDescription(recipeRequest.getDescription());
         existingRecipe.setIngredients(recipeRequest.getIngredients());
         existingRecipe.setInstructions(recipeRequest.getInstructions());
-        existingRecipe.setImageUrl(recipeRequest.getImageUrl());
+
+        // handle image upload
+        if (recipeRequest.getImageUrl() != null && !recipeRequest.getImageUrl().isEmpty()) {
+            // delete old image if exist
+            if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()) {
+                fileStorageService.deleteFile(existingRecipe.getImageUrl());
+            }
+            String newFileName = fileStorageService.storeFile(recipeRequest.getImageUrl());
+            existingRecipe.setImageUrl(newFileName);
+        } else if (recipeRequest.getImage() == null && recipeRequest.getImageUrl() == null) {
+            // If no new image and imageUrl is explicitly null/empty, delete existing
+            if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()) {
+                fileStorageService.deleteFile(existingRecipe.getImageUrl());
+            }
+            existingRecipe.setImageUrl(null);
+        } // If image is not provided, and imageUrl is not explicitly null, keep existing
 
         // Update Categories
         if (recipeRequest.getCategoryIds() != null) {
@@ -199,6 +232,10 @@ public class RecipeService {
         // Ensure only the author can delete their recipe
         if (!existingRecipe.getAuthor().getId().equals(currentUser.getId())) {
             throw new IllegalStateException("You are not authorized to delete this recipe.");
+        }
+
+        if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()) {
+            fileStorageService.deleteFile(existingRecipe.getImageUrl());
         }
 
         recipeRepository.delete(existingRecipe);
