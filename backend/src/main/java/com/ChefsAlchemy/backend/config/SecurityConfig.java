@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/categories/**").permitAll() // allow public accesss to categories
                         .requestMatchers("/api/tags/**").permitAll() // allow public accesss to tags
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/recipes", "/api/recipes/**")
+                        .requestMatchers("/api/files/**").permitAll()
                         .authenticated() // explicitly allow authenticated GET for recipes
                         .anyRequest().authenticated()// then all other requests require authentication
                 );
