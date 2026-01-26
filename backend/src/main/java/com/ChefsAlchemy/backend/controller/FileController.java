@@ -16,7 +16,7 @@ import java.io.IOException;
 public class FileController {
 
     @Autowired
-    private FileService fileService;
+    private FileStorageService fileStorageService;
 
     @GetMapping("/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {

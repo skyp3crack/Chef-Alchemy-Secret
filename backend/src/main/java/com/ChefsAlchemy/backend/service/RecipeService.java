@@ -118,8 +118,8 @@ public class RecipeService {
         User currentUser = getCurrentUser();
 
         String fileName = null;
-        if (recipeRequest.getImageUrl() != null && !recipeRequest.getImageUrl().isEmpty()) {
-            fileName = fileStorageService.storeFile(recipeRequest.getImageUrl());
+        if (recipeRequest.getImage() != null && !recipeRequest.getImage().isEmpty()) {
+            fileName = fileStorageService.storeFile(recipeRequest.getImage());
         }
 
         Recipe recipe = new Recipe(
@@ -188,20 +188,14 @@ public class RecipeService {
         existingRecipe.setInstructions(recipeRequest.getInstructions());
 
         // handle image upload
-        if (recipeRequest.getImageUrl() != null && !recipeRequest.getImageUrl().isEmpty()) {
+        if (recipeRequest.getImage() != null && !recipeRequest.getImage().isEmpty()) {
             // delete old image if exist
             if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()) {
                 fileStorageService.deleteFile(existingRecipe.getImageUrl());
             }
-            String newFileName = fileStorageService.storeFile(recipeRequest.getImageUrl());
+            String newFileName = fileStorageService.storeFile(recipeRequest.getImage());
             existingRecipe.setImageUrl(newFileName);
-        } else if (recipeRequest.getImage() == null && recipeRequest.getImageUrl() == null) {
-            // If no new image and imageUrl is explicitly null/empty, delete existing
-            if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()) {
-                fileStorageService.deleteFile(existingRecipe.getImageUrl());
-            }
-            existingRecipe.setImageUrl(null);
-        } // If image is not provided, and imageUrl is not explicitly null, keep existing
+        }
 
         // Update Categories
         if (recipeRequest.getCategoryIds() != null) {

@@ -24,7 +24,7 @@ public class FileStorageService {
     private final Path fileStorageLocation;
 
     public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {// inject upload dir from app.properties
-        this.fileStorageLocation = Path.get(uploadDir);
+        this.fileStorageLocation = Paths.get(uploadDir);
         try {
             Files.createDirectories(fileStorageLocation);// create dic if not exist
         } catch (Exception ex) {
@@ -35,7 +35,7 @@ public class FileStorageService {
     public String storeFile(MultipartFile file) {
         String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));// clean
                                                                                                             // file name
-        String fileNameExtension = '.';
+        String fileNameExtension = ".";
         int dotIndex = originalFileName.lastIndexOf('.');
         if (dotIndex > 0) {
             fileNameExtension = originalFileName.substring(dotIndex);
@@ -74,7 +74,7 @@ public class FileStorageService {
     public void deleteFile(String fileName) {
         try {
             Path filePath = fileStorageLocation.resolve(fileName).normalize();
-            files.deleteIfExists(filePath);
+            Files.deleteIfExists(filePath);
         } catch (IOException ex) {
             throw new RuntimeException("Could not delete the file: " + fileName, ex);
         }
