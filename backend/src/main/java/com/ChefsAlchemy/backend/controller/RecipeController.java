@@ -21,6 +21,8 @@ import com.ChefsAlchemy.backend.dto.RecipeResponse;
 import com.ChefsAlchemy.backend.service.RecipeService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 @CrossOrigin(origins = "http://localhost:5173", maxAge = 3600)
 @RestController
@@ -29,10 +31,14 @@ public class RecipeController {
     @Autowired
     private RecipeService recipeService;
 
-    @PostMapping
+    @PostMapping(consumes={MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}) //consum multipart/formdata
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')") // Only authenticated users can create
-    public ResponseEntity<RecipeResponse> createRecipe(@Valid @RequestBody RecipeRequest recipeRequest) {
+    public ResponseEntity<RecipeResponse> createRecipe(
+        @RequestPart("recipe") @Valid @RecipeRequest recipeRequest,
+        @RequestPart(value = "image", required=false) MultipartFile image)
+        {
         try {
+            recipeRequest.setImage(image);
             RecipeResponse newRecipe = recipeService.createRecipe(recipeRequest);
             return new ResponseEntity<>(newRecipe, HttpStatus.CREATED);
         } catch (IllegalStateException e) {
@@ -66,17 +72,23 @@ public class RecipeController {
         }
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')") // Only authenticated users can update
-    public ResponseEntity<RecipeResponse> updateRecipe(@PathVariable Long id,
-            @Valid @RequestBody RecipeRequest recipeRequest) {
+    @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE }) // NEW:
+                                                                                                                       // Consume
+                                                                                                                       // multipart/form-data
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<RecipeResponse> updateRecipe(
+            @PathVariable Long id,
+            @RequestPart("recipe") @Valid RecipeRequest recipeRequest, // NEW: Use @RequestPart for JSON part
+            @RequestPart(value = "image", required = false) MultipartFile image // NEW: Use @RequestPart for file part
+    ) {
         try {
+            recipeRequest.setImage(image); // Set the image in the request DTO
             RecipeResponse updatedRecipe = recipeService.updateRecipe(id, recipeRequest);
             return new ResponseEntity<>(updatedRecipe, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalStateException e) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Not authorized to update this recipe
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
