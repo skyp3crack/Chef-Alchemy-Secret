@@ -3,6 +3,7 @@ package com.ChefsAlchemy.backend.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 //recipe request dto as a data transfer 
 //after created model->reposioty->dto
@@ -26,7 +27,7 @@ public class RecipeRequest {
     @Size(min = 3)
     private String instructions;
 
-    private String imageUrl;
+    private MultipartFile image;
 
     private List<Long> tagIds;
     private List<Long> categoryIds;
@@ -34,13 +35,13 @@ public class RecipeRequest {
     public RecipeRequest() {
     }
 
-    public RecipeRequest(String title, String description, String ingredients, String instructions, String imageUrl,
+    public RecipeRequest(String title, String description, String ingredients, String instructions, MultipartFile image,
             List<Long> tagIds, List<Long> categoryIds) {
         this.title = title;
         this.description = description;
         this.ingredients = ingredients;
         this.instructions = instructions;
-        this.imageUrl = imageUrl;
+        this.image = image;
         this.tagIds = tagIds;
         this.categoryIds = categoryIds;
     }
@@ -77,12 +78,12 @@ public class RecipeRequest {
         this.instructions = instructions;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public MultipartFile getImage() {
+        return image;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(MultipartFile image) {
+        this.image = image; // store image in dto
     }
 
     public void setTagIds(List<Long> tagIds) {
