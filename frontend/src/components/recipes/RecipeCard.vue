@@ -14,8 +14,8 @@
             <span class="rating-count">({{ recipe.ratingCount || 0 }})</span>
             </div>
             <div class="card-meta" v-if="recipe.tags && recipe.tags.length > 0">
-              <span v-for="(tag, index) in recipe.tags.slice(0, 3)" :key="tag" class="meta-tag">
-                {{ tag }}<span v-if="index < recipe.tags.slice(0,3).length - 1">, </span>
+              <span v-for="(tag, index) in recipe.tags.slice(0, 3)" :key="tag.id" class="meta-tag">
+                {{ tag.name }}<span v-if="index < recipe.tags.slice(0,3).length - 1">, </span>
               </span>
               <span v-if="recipe.tags.length > 3">...</span>
             </div>

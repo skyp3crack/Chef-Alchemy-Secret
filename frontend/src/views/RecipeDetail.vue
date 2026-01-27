@@ -17,17 +17,17 @@
         </span>
       </div>
 
-      <div class="recipe-meta" v-if="recipe.categories && recipe.categories.length>0">
+      <div class="recipe-meta" v-if="recipe.categories && recipe.categories.length > 0">
         <strong>Categories:</strong>
-        <span v-for="category in recipe.categories" :key="category" class="category-tag">
-            {{ category }}
+        <span v-for="category in recipe.categories" :key="category.id" class="category-tag">
+            {{ category.name }}
         </span>
       </div>
 
        <div class="recipe-meta" v-if="recipe.tags && recipe.tags.length > 0">
         <strong>Tags:</strong>
-        <span v-for="tag in recipe.tags" :key="tag" class="meta-item category-tag">
-          {{ tag }}
+        <span v-for="tag in recipe.tags" :key="tag.id" class="meta-item category-tag">
+          {{ tag.name }}
         </span>
       </div>
 
