@@ -91,6 +91,7 @@ public class RecipeController {
         } catch (IllegalStateException e) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception e) {
+            e.printStackTrace(); // Log the actual error
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -106,6 +107,7 @@ public class RecipeController {
         } catch (IllegalStateException e) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Not authorized to delete this recipe
         } catch (Exception e) {
+            e.printStackTrace(); // Log the actual error
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

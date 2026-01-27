@@ -28,6 +28,7 @@ public class RecipeRequest {
     private String instructions;
 
     private MultipartFile image;
+    private Boolean removeImage; // Flag to indicate image removal
 
     private List<Long> tagIds;
     private List<Long> categoryIds;
@@ -100,6 +101,14 @@ public class RecipeRequest {
 
     public List<Long> getCategoryIds() {
         return categoryIds;
+    }
+
+    public Boolean getRemoveImage() {
+        return removeImage;
+    }
+
+    public void setRemoveImage(Boolean removeImage) {
+        this.removeImage = removeImage;
     }
 
 }

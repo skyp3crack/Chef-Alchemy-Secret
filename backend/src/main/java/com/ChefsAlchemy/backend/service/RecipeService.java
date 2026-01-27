@@ -88,7 +88,7 @@ public class RecipeService {
                 .collect(Collectors.toList());
 
         String imageUrl = null;
-        if (recipe.getImageUrl() != null && recipe.getImageUrl().isEmpty()) {
+        if (recipe.getImageUrl() != null && !recipe.getImageUrl().isEmpty()) {
             imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/api/files/")
                     .path(recipe.getImageUrl())
@@ -187,14 +187,24 @@ public class RecipeService {
         existingRecipe.setIngredients(recipeRequest.getIngredients());
         existingRecipe.setInstructions(recipeRequest.getInstructions());
 
-        // handle image upload
+        // handle image upload or removal
         if (recipeRequest.getImage() != null && !recipeRequest.getImage().isEmpty()) {
-            // delete old image if exist
-            if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()) {
+            // delete old image if exist (only if it's a local file, not an external URL)
+            if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()
+                    && !existingRecipe.getImageUrl().startsWith("http://")
+                    && !existingRecipe.getImageUrl().startsWith("https://")) {
                 fileStorageService.deleteFile(existingRecipe.getImageUrl());
             }
             String newFileName = fileStorageService.storeFile(recipeRequest.getImage());
             existingRecipe.setImageUrl(newFileName);
+        } else if (Boolean.TRUE.equals(recipeRequest.getRemoveImage())) {
+            // Explicitly remove image if flag is true (only if it's a local file)
+            if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()
+                    && !existingRecipe.getImageUrl().startsWith("http://")
+                    && !existingRecipe.getImageUrl().startsWith("https://")) {
+                fileStorageService.deleteFile(existingRecipe.getImageUrl());
+            }
+            existingRecipe.setImageUrl(null);
         }
 
         // Update Categories
@@ -228,7 +238,10 @@ public class RecipeService {
             throw new IllegalStateException("You are not authorized to delete this recipe.");
         }
 
-        if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()) {
+        // Delete associated image file (only if it's a local file, not an external URL)
+        if (existingRecipe.getImageUrl() != null && !existingRecipe.getImageUrl().isEmpty()
+                && !existingRecipe.getImageUrl().startsWith("http://")
+                && !existingRecipe.getImageUrl().startsWith("https://")) {
             fileStorageService.deleteFile(existingRecipe.getImageUrl());
         }
 

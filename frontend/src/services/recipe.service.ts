@@ -37,13 +37,14 @@ export interface Recipe {
     description: string;
     ingredients: string;
     instructions: string;
-    imageUrl?: string;
+    imageUrl?: string | null;
+    imageFile?: File | null;
     authorUsername?: string;
     authorId?: number;
     createdAt?: string;
     updatedAt?: string;
-    tags?: string[];
-    categories?: string[];
+    tags?: Tag[];
+    categories?: Category[];
     tagIds?: number[];
     categoryIds?: number[];
     averageRating?: number
@@ -52,6 +53,33 @@ export interface Recipe {
 }
 
 class RecipeService {
+    private buildFormData(recipe: Recipe): FormData {
+        const formData = new FormData();
+        //create json object for the recipe data without file
+        const recipeData = {
+            title: recipe.title,
+            description: recipe.description,
+            ingredients: recipe.ingredients,
+            instructions: recipe.instructions,
+            tagIds: recipe.tagIds,
+            categoryIds: recipe.categoryIds,
+            removeImage: recipe.imageUrl === null, // Signal deletion to backend
+        }
+        // Backend expects 'recipe' part as application/json
+        formData.append('recipe', new Blob([JSON.stringify(recipeData)], { type: 'application/json' }));
+
+        // Backend expects 'image' part (as defined in RecipeRequest and Controller)
+        if (recipe.imageFile) {
+            formData.append('image', recipe.imageFile);
+        } else if (recipe.imageUrl === null) {
+            // Signal deletion to backend
+            // Note: removeImage flag in recipeData handles this, but we can also send an empty blob
+            formData.append('image', new Blob([], { type: 'application/octet-stream' }));
+        }
+        return formData;
+    }
+
+
 
     async getAllRecipes(keyword?: string, categoryIds?: number[], tagIds?: number[]): Promise<Recipe[]> {
         const params: any = {}; // any is used to define a type that can be any type . and {} is used to define an object
@@ -78,8 +106,15 @@ class RecipeService {
 
     async createRecipe(recipe: Recipe): Promise<Recipe> {
         try {
-            const response = await api.post<Recipe>(`/recipes`, recipe)
-            return response.data
+            const formData = this.buildFormData(recipe);
+            const response = await api.post<Recipe>(`/recipes`, formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'//for file upload with form data
+                    }
+                }
+            );
+            return response.data;
         } catch (e: any) {
             throw new Error(e.response.data.message || 'Failed to create recipe');
         }
@@ -87,8 +122,15 @@ class RecipeService {
 
     async updateRecipe(recipe: Recipe): Promise<Recipe> {
         try {
-            const response = await api.put<Recipe>(`/recipes/${recipe.id}`, recipe)
-            return response.data
+            const formData = this.buildFormData(recipe);
+            const response = await api.put<Recipe>(`/recipes/${recipe.id}`, formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'//for file upload with form data
+                    }
+                }
+            );
+            return response.data;
         } catch (e: any) {
             throw new Error(e.response.data.message || `Failed to update recipe with id ${recipe.id}`);
         }

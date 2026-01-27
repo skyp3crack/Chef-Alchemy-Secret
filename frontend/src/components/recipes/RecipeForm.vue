@@ -23,8 +23,16 @@
       </div>
 
       <div class="form-group">
-        <label for="imageUrl">Image URL (optional):</label>
-        <input type="url" id="imageUrl" v-model="recipe.imageUrl" />
+        <label for="image">Recipe Image:</label>
+        <input type="file" id="image" @change="handleImageUpload" accept="image/*" />
+        <div v-if="imagePreviewUrl" class="image-preview">
+          <img :src="imagePreviewUrl" alt="Image Preview" />
+          <button type="button" @click="removeImage" class="remove-image-btn">Remove Image</button>
+        </div>
+        <p v-else-if="recipe.imageUrl" class="current-image-text">
+          Current Image: <a :href="recipe.imageUrl" target="_blank">View</a>
+          <button type="button" @click="removeImage" class="remove-image-btn">Remove Current Image</button>
+        </p>
       </div>
 
       <div class="form-group">
@@ -78,7 +86,8 @@
             description: '',
             ingredients: '',
             instructions: '',
-            imageUrl: ''
+            imageUrl: '',
+            imageFile: null, //file object for new image upload
         })
 
         const availableCategories = ref<Category[]>([]) 
@@ -91,6 +100,8 @@
         const loading = ref(false);
         const message = ref('');
         const isSuccess = ref(false);
+
+        const imagePreviewUrl = ref<string | null>(null) //for displaying selected file
 
 onMounted(async () => {
   // Fetch categories and tags
@@ -111,12 +122,17 @@ onMounted(async () => {
     try {
       const fetchedRecipe = await RecipeService.getRecipeById(recipeId.value)
       recipe.value = fetchedRecipe
+      //image preview
+      if(fetchedRecipe.imageUrl){
+        imagePreviewUrl.value = fetchedRecipe.imageUrl
+      }
+
       // Pre-select categories and tags for editing
       selectedCategoryIds.value = availableCategories.value
-        .filter(cat => fetchedRecipe.categories?.includes(cat.name))
+        .filter(cat => fetchedRecipe.categories?.some(c => c.name === cat.name))
         .map(cat => cat.id)
       selectedTagIds.value = availableTags.value
-        .filter(tag => fetchedRecipe.tags?.includes(tag.name))
+        .filter(tag => fetchedRecipe.tags?.some(t => t.name === tag.name))
         .map(tag => tag.id)
     } catch (err: any) {
       message.value = err.message || 'Failed to load recipe for editing.'
@@ -124,6 +140,31 @@ onMounted(async () => {
     }
   }
 })
+
+    const handleImageUpload = (event:Event)=>{
+      const target = event.target as HTMLInputElement;
+      if(target.files && target.files[0]){
+        const file = target.files[0]; //get the file
+        recipe.value.imageFile = file;
+        imagePreviewUrl.value = URL.createObjectURL(file); // Create a URL for preview
+        recipe.value.imageUrl = undefined; // Clear existing URL if new file is selected
+      } else {
+        recipe.value.imageFile = null;
+        imagePreviewUrl.value = recipe.value.imageUrl || null; // Revert to existing or null
+      }
+    };
+
+
+    const removeImage = () => {
+    recipe.value.imageFile = null;
+    recipe.value.imageUrl = null; // Explicitly set to null to signal backend to remove
+    imagePreviewUrl.value = null;
+    // Clear the file input visually if possible (depends on browser/framework)
+    const fileInput = document.getElementById('image') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
 
 const handleSubmit = async () => {
   loading.value = true
@@ -144,9 +185,14 @@ const handleSubmit = async () => {
       message.value = 'Recipe added successfully!'
       isSuccess.value = true
       // Clear form after successful creation
-      recipe.value = { title: '', description: '', ingredients: '', instructions: '', imageUrl: '' }
+      recipe.value = { title: '', description: '', ingredients: '', instructions: '', imageUrl: '', imageFile: null }
       selectedCategoryIds.value = []
       selectedTagIds.value = []
+      imagePreviewUrl.value = null; //clear image preview
+      const fileInput = document.getElementById('image') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
     }
     // Redirect after a short delay
     setTimeout(() => {
@@ -218,6 +264,47 @@ select[multiple] { /* NEW: Style for multiple select */
   min-height: 100px; /* Ensure multiple select is tall enough */
 }
 
+.image-preview {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100%;
+  height: 200px;
+  object-fit: contain; /* Use contain to show full image without cropping */
+  border: 1px solid #eee;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.current-image-text {
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.current-image-text a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.remove-image-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.remove-image-btn:hover {
+  background-color: #c82333;
+}
 
 button[type="submit"] {
   width: 100%;
