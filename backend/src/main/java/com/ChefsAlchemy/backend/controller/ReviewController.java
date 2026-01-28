@@ -26,13 +26,18 @@ public class ReviewController {
     public ResponseEntity<ReviewResponse> addReview(@PathVariable Long recipeId,
             @Valid @RequestBody ReviewRequest reviewRequest) {
         try {
+            System.out.println("ReviewController: Attempting to add review for recipe: " + recipeId);
             ReviewResponse newReview = reviewService.addReview(recipeId, reviewRequest);
             return new ResponseEntity<>(newReview, HttpStatus.CREATED);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (IllegalStateException e) {
+            System.err.println("ReviewController: IllegalStateException caught: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception e) {
+            System.err.println("ReviewController: Exception caught: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

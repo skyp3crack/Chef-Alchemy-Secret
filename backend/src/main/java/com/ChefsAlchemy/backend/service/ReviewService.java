@@ -35,8 +35,11 @@ public class ReviewService {
     private User getCurrentAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
+            System.err.println("ReviewService: Authentication is null or not authenticated");
             throw new IllegalStateException("User is not authenticated.");
         }
+        System.out.println("ReviewService: Current authentication: " + authentication.getName() + ", Authorities: "
+                + authentication.getAuthorities());
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found in database."));

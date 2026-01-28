@@ -55,8 +55,11 @@ public class RecipeService {
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
+            System.err.println("RecipeService: Authentication is null or not authenticated");
             throw new IllegalStateException("User is not authenticated.");
         }
+        System.out.println("RecipeService: Current authentication: " + authentication.getName() + ", Authorities: "
+                + authentication.getAuthorities());
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Authenticated user not found in database."));

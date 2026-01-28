@@ -40,11 +40,16 @@ public class RecipeController {
             @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
             recipeRequest.setImage(image);
+            System.out.println("RecipeController: Attempting to create recipe: " + recipeRequest.getTitle());
             RecipeResponse newRecipe = recipeService.createRecipe(recipeRequest);
             return new ResponseEntity<>(newRecipe, HttpStatus.CREATED);
         } catch (IllegalStateException e) {
+            System.err.println("RecipeController: IllegalStateException caught: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Not authenticated or other auth issue
         } catch (Exception e) {
+            System.err.println("RecipeController: Exception caught: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
