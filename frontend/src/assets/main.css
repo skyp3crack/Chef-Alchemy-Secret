@@ -1,22 +1,74 @@
 @import './base.css';
 
-#app {
-  width: 100%;
+/* ─── Chef Alchemy Design Tokens ─── */
+:root {
+  --ca-saffron:       #E8A027;
+  --ca-saffron-light: #F5C561;
+  --ca-saffron-dark:  #C4841A;
+  --ca-sage:          #7C9E74;
+  --ca-sage-light:    #A8C4A0;
+  --ca-sage-dark:     #5A7A52;
+  --ca-charcoal:      #1E1F22;
+  --ca-charcoal-soft: #2A2B2F;
+  --ca-cream:         #FBF8F3;
+  --ca-cream-warm:    #F5EDDE;
+  --ca-white:         #FFFFFF;
+  --ca-text-primary:  #1E1F22;
+  --ca-text-secondary:#5C5F66;
+  --ca-text-muted:    #9CA3AF;
+  --ca-border:        rgba(30,31,34,0.10);
+  --ca-shadow-sm:     0 2px 8px rgba(30,31,34,0.08);
+  --ca-shadow-md:     0 8px 32px rgba(30,31,34,0.12);
+  --ca-shadow-lg:     0 20px 60px rgba(30,31,34,0.16);
+  --ca-radius-sm:     8px;
+  --ca-radius-md:     16px;
+  --ca-radius-lg:     24px;
+  --ca-radius-xl:     32px;
+  --font-display:     'Playfair Display', Georgia, serif;
+  --font-body:        'Plus Jakarta Sans', system-ui, sans-serif;
+  --transition-fast:  0.2s ease;
+  --transition-base:  0.35s ease;
+  --transition-slow:  0.6s ease;
+}
+
+/* ─── Global Resets ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-weight: normal;
 }
 
-a,
-.green {
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: 16px;
+  background: var(--ca-cream);
+  color: var(--ca-text-primary);
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Override base.css dark mode for this themed app */
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Remove Vue template's global anchor color override */
+a {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+  color: inherit;
+  transition: var(--transition-fast);
+  padding: 0;
+  background-color: transparent;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+a:hover {
+  background-color: transparent;
 }
